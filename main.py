@@ -8,7 +8,7 @@ import numpy as np
 
 def genera_lista_indices(k):
     lista_sub_indice = []
-    r = random.randint(0, 16)
+    r = random.randint(0, 15)
     longitud = k * 4
     indice = r
     for i in range(longitud):
@@ -24,8 +24,8 @@ def mutar(s,k,paso_mutacion):
     lista_indices_modificar = genera_lista_indices(k)
     parejas_mutaciones = list(itertools.permutations(lista_indices_modificar, 2))
     numero_parejas = int(len(parejas_mutaciones)*0.6)
-    print(numero_parejas)
-    print(lista_indices_modificar)
+    # print(numero_parejas)
+    # print(lista_indices_modificar)
     
     for i in range(numero_parejas):
         a = random.choice(lista_indices_modificar)
@@ -35,66 +35,66 @@ def mutar(s,k,paso_mutacion):
             a = random.choice(lista_indices_modificar)
             b = random.choice(lista_indices_modificar)
         
-        
+        # print( "indices ", a , "   " , b)
         if ( np.random.uniform(0,1) > 0.5):
-            if(s[a] > paso_mutacion):
-                s[a] = s[a] - paso_mutacion
-                s[b] = s[b] + paso_mutacion
+            if(s_inicial[a] > paso_mutacion):
+                s_inicial[a] = s_inicial[a] - paso_mutacion
+                s_inicial[b] = s_inicial[b] + paso_mutacion
                 
-            elif (s[b] > paso_mutacion):
-                s[b] = s[b] - paso_mutacion
-                s[a] = s[a] + paso_mutacion
+            elif (s_inicial[b] > paso_mutacion):
+                s_inicial[b] = s_inicial[b] - paso_mutacion
+                s_inicial[a] = s_inicial[a] + paso_mutacion
             # print("Valores indice A " ,a , "  ",b)
         else:
-            if(s[b] > paso_mutacion):
-                s[b] = s[b] - paso_mutacion
-                s[a] = s[a] + paso_mutacion
-            elif (s[a] > paso_mutacion):
-                s[a] = s[a] - paso_mutacion
-                s[b] = s[b] + paso_mutacion
+            if(s_inicial[b] > paso_mutacion):
+                s_inicial[b] = s_inicial[b] - paso_mutacion
+                s_inicial[a] = s_inicial[a] + paso_mutacion
+            elif (s_inicial[a] > paso_mutacion):
+                s_inicial[a] = s_inicial[a] - paso_mutacion
+                s_inicial[b] = s_inicial[b] + paso_mutacion
             # print("Valores indice  B " ,a , "  ",b)
             
-    k = 0
-    while(k<len(lista_indices_modificar)):
-        if s_inicial[lista_indices_modificar[k]] == s[lista_indices_modificar[k]]:
-            print("Valores no modificados")
-            break
-        k+=1
-    print(s_inicial)
-    print(s)
+            
+    # k = 0
+    # while(k<len(lista_indices_modificar)):
+    #     if s_inicial[lista_indices_modificar[k]] == s[lista_indices_modificar[k]]:
+    #         print("Valores no modificados")
+    #         break
+    #     k+=1
         
-    return s
+    return s_inicial
         
    
 
     
     
 def VNS():
-    # s_actual = algoritmos.estado_inicial_random()
-    s_actual = algoritmos.greedy_inicializar(16,220)
+    S = algoritmos.greedy_inicializar(16,220)
     k = 1
-    while k <= 2:
-        s_tmp,coste_tmp,coste_actual = algoritmos.busqueda_local(s_actual)
-        print("Costes " , coste_tmp , "   " , coste_actual)
+    S_vecino = S.copy()
+    coste_actual = algoritmos.coste_slot(S)
+    while k <= 4:
+        s_tmp,coste_tmp = algoritmos.busqueda_local(S_vecino)
+        print(s_tmp)
+        print(S)
+        print("Costes " , coste_tmp , "   " , coste_actual , "   k actual ", k)
         if coste_tmp < coste_actual:
-            # print(s_actual ,"\n" , s_tmp)
-            s_actual = s_tmp
+            print("Mejora")
+            # print("Mejora    Costes -> " ,coste_tmp  , "   " , coste_actual , "   " , k)
+            S = s_tmp.copy()
+            coste_actual = coste_tmp
             k = 1
-            print("Costes -> " , coste_actual , "   " , coste_tmp)
         else:
             print("No mejora")
             k +=1
-            
-        s_actual = mutar(s_actual,k)
-    print("Solucion BL " , s_actual , " con coste -> ", coste_actual, "   " ,np.array(s_actual).sum() )
+        # Generacionnde vecino por mutacion
+        S_vecino = mutar(S,k,2)
+        
+    print("Solucion BL " , S , " con coste -> ", coste_actual, "   " ,np.array(S).sum() )
 
 
 s = [36, 10, 13, 16, 15, 10, 12, 11, 14, 12, 12, 16,  7, 12, 16,  8,]
+VNS()
 
 
-
-# VNS()
-s_mutada = mutar(s,1,2)
-
-
-
+# s_actual = mutar(s,1,2)

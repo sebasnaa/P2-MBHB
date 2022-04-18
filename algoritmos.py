@@ -291,4 +291,4 @@ def busqueda_local(seed):
     # print(slot_por_estaciones , "coste mejor ",coste_mejor , " " , "--- %s seconds ---" % (time.time() - start_time))
     # print("evaluaciones ", numero_evaluaciones)
     
-    return slot_por_estaciones,coste_mejor,coste_s_inicial
+    return slot_por_estaciones,coste_mejor
