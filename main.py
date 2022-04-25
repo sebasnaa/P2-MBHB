@@ -1,6 +1,7 @@
 
 import itertools
 import random
+import time
 import algoritmos 
 
 import numpy as np
@@ -69,14 +70,20 @@ def mutar(s,k,paso_mutacion):
     
     
 def VNS():
-    S = algoritmos.greedy_inicializar(16,220)
+    start_time = time.time()
+    # S = algoritmos.greedy_inicializar(16,220)
+    S = algoritmos.estado_inicial_random()
     k = 1
+    bl = 0
     S_vecino = S.copy()
     coste_actual = algoritmos.coste_slot(S)
-    while k <= 4:
+    while bl < 10:
+        print("Valor de bl ", bl)
         s_tmp,coste_tmp = algoritmos.busqueda_local(S_vecino)
-        print(s_tmp)
-        print(S)
+        bl += 1
+                           
+        print(s_tmp, " ", s_tmp.sum())
+        print(S , "  ", S.sum())
         print("Costes " , coste_tmp , "   " , coste_actual , "   k actual ", k)
         if coste_tmp < coste_actual:
             print("Mejora")
@@ -87,10 +94,11 @@ def VNS():
         else:
             print("No mejora")
             k +=1
+            k = k % 5
         # Generacionnde vecino por mutacion
-        S_vecino = mutar(S,k,2)
+        S_vecino = mutar(S,k,3)
         
-    print("Solucion BL " , S , " con coste -> ", coste_actual, "   " ,np.array(S).sum() )
+    print("Solucion BL " , S , " con coste -> ", coste_actual, "   " ,np.array(S).sum() , "--- %s seconds ---" % (time.time() - start_time))
 
 
 s = [36, 10, 13, 16, 15, 10, 12, 11, 14, 12, 12, 16,  7, 12, 16,  8,]

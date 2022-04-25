@@ -171,7 +171,8 @@ def estado_inicial_random():
     for indice in range(16):
         suma = np.array(random_list).sum()
 
-        multiplicador = 218 - suma
+        #218
+        multiplicador = 220 - suma
         aux = random_list[indice] * multiplicador
 
         if (aux > 50):
@@ -180,7 +181,8 @@ def estado_inicial_random():
         random_list[indice] = aux
 
     random_list_rounded = np.round(random_list)
-    slot_random = inicializar_greedy(random_list_rounded, 218)
+    #220
+    slot_random = inicializar_greedy(random_list_rounded, 220)
     return slot_random
 
 
@@ -192,6 +194,8 @@ def greedy_inicializar(dimension,limite_elementos):
         aux = valor % dimension
         arr[aux] += 1
     return arr
+
+
 
 
 def coste_slot(slot_por_estaciones):
