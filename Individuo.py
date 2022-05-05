@@ -15,21 +15,23 @@ class Individuo:
     
     Parametros
     -------------
-    numero_estaciones : `int` número de estaciones en cada individuo. (Por defecto 16)
+    numero_estaciones : ``int`` número de estaciones en cada individuo. (Por defecto ``16``)
     
-    verbose : `boolean` muestra la información inicial del individuo en su creacion. (Por defecto False)
+    alpha : ``int`` valor alpha para el control del crecimiento del número de slots totales.
+    
+    verbose : ``bool`` muestra la información inicial del individuo en su creacion. (Por defecto ``False``)
     
     
     Atributos
     -------------
-    fitness : `float` valor de fitness del individuo.
-    contenido : `int` array que representa los slots de las estaciones.
+    fitness : ``float`` valor de fitness del individuo.
+    contenido : ``int`` array que representa los slots de las estaciones.
     """
     
     def calculo_fitness_mod(self):
         """
         Calcula el fitness de cada individuo haciendo uso de alpha y por sobre pasar un
-        número de slots total. (Por defecto 205)
+        número de slots total. (Por defecto ``205``)
         """
         slots_diff = self.contenido.sum()-205
         if slots_diff > 0 :
@@ -52,7 +54,7 @@ class Individuo:
     
     
     def __repr__(self):
-        return ("Individuo " + str(self.contenido)  + " total slots " + str(self.contenido.sum()) + " -- Fitness " + str(self.fitness) + " slot diff "+ str(self.contenido.sum()-205))
+        return ("Individuo " + str(self.contenido)  + " total slots " + str(self.contenido.sum()) + " -- Fitness " + str(self.fitness) + " slot diff "+ str(self.contenido.sum()-205)+"\n")
     
     
     def mutar(self,proba_mutacion_inf = 0.05,proba_mutacion_sup = 0.2, verbose= False ):
@@ -62,11 +64,11 @@ class Individuo:
         
         Parametros
         -------------
-        proba_mutacion_inf : `float` valor % minimo a mutar del individuo.
+        proba_mutacion_inf : ``float`` valor % minimo a mutar del individuo.
         
-        proba_mutacion_sup : `float` valor % maximo a mutar del individuo.
+        proba_mutacion_sup : ``float`` valor % maximo a mutar del individuo.
         
-        verbose : `boolean` mostrar cambios pre y post mutación.
+        verbose : ``bool`` mostrar cambios pre y post mutación. (Por defecto ``False``)
         
         """
         
