@@ -26,20 +26,26 @@ class Individuo:
     contenido : `int` array que representa los slots de las estaciones.
     """
     
-    
+    def calculo_fitness_mod(self):
+        """
+        Calcula el fitness de cada individuo haciendo uso de alpha y por sobre pasar un
+        número de slots total. (Por defecto 205)
+        """
+        slots_diff = self.contenido.sum()-205
+        if slots_diff > 0 :
+            self.fitness = algoritmos.coste_slot(self.contenido) + self.alpha*slots_diff
+        else:
+            self.fitness = algoritmos.coste_slot(self.contenido)
     
     def __init__(self,alpha = 1.5 ,numero_estaciones = 16,verbose=False):
         
         self.numero_estaciones = numero_estaciones
+        self.alpha = alpha
+        
         # self.contenido = np.array(algoritmos.estado_inicial_random(),dtype=int)
         self.contenido = np.array(algoritmos.greedy_inicializar(self.numero_estaciones,220),dtype=int)
         
-        slots_diff = self.contenido.sum()-205
-        if slots_diff > 0 :
-            self.fitness = algoritmos.coste_slot(self.contenido) + alpha*slots_diff
-        else:
-            self.fitness = algoritmos.coste_slot(self.contenido)
-        
+        self.calculo_fitness_mod()
         
         if verbose:
             print("Nuevo individuo ", self.contenido , " total slots " , self.contenido.sum(), " -- Fitness " , str(self.fitness)  , " slot diff ", self.contenido.sum()-205)
@@ -49,32 +55,44 @@ class Individuo:
         return ("Individuo " + str(self.contenido)  + " total slots " + str(self.contenido.sum()) + " -- Fitness " + str(self.fitness) + " slot diff "+ str(self.contenido.sum()-205))
     
     
-    def actualizar_individuo(self):
-        self.fitness = algoritmos.coste_slot(self.contenido)
-    
     def mutar(self,proba_mutacion_inf = 0.05,proba_mutacion_sup = 0.2, verbose= False ):
-        # Hay que mutar entre un 5% y 20% de cada cruze
+        """
+        Aplica una mutación sobre el individuo en base al porcentaje establecido.
         
-        print(self)
+        
+        Parametros
+        -------------
+        proba_mutacion_inf : `float` valor % minimo a mutar del individuo.
+        
+        proba_mutacion_sup : `float` valor % maximo a mutar del individuo.
+        
+        verbose : `boolean` mostrar cambios pre y post mutación.
+        
+        """
+        
+        # Hay que mutar entre un 5% y 20% de cada cruze
         
         porcentaje_mutacion = np.random.uniform(proba_mutacion_inf,proba_mutacion_sup)
         numero_mutaciones = int(np.round(self.numero_estaciones*porcentaje_mutacion))
         
-        print("num " , numero_mutaciones)
         valores_modificadores = np.arange(1,numero_mutaciones+1)
-        print(valores_modificadores)
+        # valores_modificadores = np.arange(1,10)
+        np.random.shuffle(valores_modificadores)
         
         for i in range(numero_mutaciones):
             a = random.choice(np.arange(0,self.numero_estaciones))
             if(np.random.uniform(0,1) > 0.5):
                 # Suma valor a la estacion elegida
-                print("Mut posicion "  , a , " valor sumado " , valores_modificadores[i])
+                if verbose:
+                    print( "Posición modificada "  + str(a) + " valor sumado " + str(valores_modificadores[i]) )
                 self.contenido[a] += valores_modificadores[i]
             else:
                 # Resto valor a la estacion elegida
-                print("Mut posicion "  , a , " valor restado " , valores_modificadores[i])
+                if verbose:
+                    print( "Posición modificada "  + str(a) + " valor restado " + str(valores_modificadores[i]) )
                 self.contenido[a] -= valores_modificadores[i]
         
-        self.actualizar_individuo()
-        print("Tras mutacion")
-        print(self)
+        
+        self.calculo_fitness_mod()
+        if verbose:
+            print(self)
