@@ -23,12 +23,9 @@ def mutar(s,k,paso_mutacion):
     s_inicial = s.copy()
     
     lista_indices_modificar = genera_lista_indices(k)
-    parejas_mutaciones = list(itertools.permutations(lista_indices_modificar, 2))
-    numero_parejas = int(len(parejas_mutaciones)*0.6)
-    # print(numero_parejas)
-    # print(lista_indices_modificar)
     
-    for i in range(numero_parejas):
+    
+    for i in range(k):
         a = random.choice(lista_indices_modificar)
         b = random.choice(lista_indices_modificar)
        
@@ -36,7 +33,6 @@ def mutar(s,k,paso_mutacion):
             a = random.choice(lista_indices_modificar)
             b = random.choice(lista_indices_modificar)
         
-        # print( "indices ", a , "   " , b)
         if ( np.random.uniform(0,1) > 0.5):
             if(s_inicial[a] > paso_mutacion):
                 s_inicial[a] = s_inicial[a] - paso_mutacion
@@ -45,7 +41,6 @@ def mutar(s,k,paso_mutacion):
             elif (s_inicial[b] > paso_mutacion):
                 s_inicial[b] = s_inicial[b] - paso_mutacion
                 s_inicial[a] = s_inicial[a] + paso_mutacion
-            # print("Valores indice A " ,a , "  ",b)
         else:
             if(s_inicial[b] > paso_mutacion):
                 s_inicial[b] = s_inicial[b] - paso_mutacion
@@ -53,15 +48,7 @@ def mutar(s,k,paso_mutacion):
             elif (s_inicial[a] > paso_mutacion):
                 s_inicial[a] = s_inicial[a] - paso_mutacion
                 s_inicial[b] = s_inicial[b] + paso_mutacion
-            # print("Valores indice  B " ,a , "  ",b)
             
-            
-    # k = 0
-    # while(k<len(lista_indices_modificar)):
-    #     if s_inicial[lista_indices_modificar[k]] == s[lista_indices_modificar[k]]:
-    #         print("Valores no modificados")
-    #         break
-    #     k+=1
         
     return s_inicial
         
@@ -69,6 +56,8 @@ def mutar(s,k,paso_mutacion):
 
     
     
+    
+   # pendiente agregar la condicion que esta en el usb importante 
 def VNS():
     start_time = time.time()
     # S = algoritmos.greedy_inicializar(16,220)

@@ -296,3 +296,10 @@ def busqueda_local(seed):
     # print("evaluaciones ", numero_evaluaciones)
     
     return slot_por_estaciones,coste_mejor
+
+
+
+
+
+
+
