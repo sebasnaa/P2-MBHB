@@ -16,4 +16,9 @@ from Poblacion import Poblacion
 # ind_a.mutar(verbose=True)
 
 
-p = Poblacion(numero_individuos=10)
+p = Poblacion(numero_individuos=8,verbose=True)
+
+print("cruze")
+
+
+p.cruze_2_puntos()
