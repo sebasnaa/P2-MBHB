@@ -219,7 +219,7 @@ def coste_slot(slot_por_estaciones):
         while out != 0:
             bicis_res, estacion_sig, distancia_aux = estacion_cercana(estacion, out,bicicletas_disponibles,huecos_disponibles)
             out, bicicletas_disponibles, huecos_disponibles = (accion_posible(bicis_res, estacion_sig,bicicletas_disponibles,huecos_disponibles))
-
+            # print("valor de out " , out , " bloqueado " , huecos_disponibles , "  " , bicicletas_disponibles)
             tmp = abs(bicis_res) - abs(out)
             distanciaTotal = distanciaTotal + distancia_aux*tmp
 

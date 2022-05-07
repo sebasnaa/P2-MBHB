@@ -33,11 +33,14 @@ class Individuo:
         Calcula el fitness de cada individuo haciendo uso de alpha y por sobre pasar un
         número de slots total. (Por defecto ``205``)
         """
-        slots_diff = self.contenido.sum()-205
-        if slots_diff > 0 :
-            self.fitness = algoritmos.coste_slot(self.contenido) + self.alpha*slots_diff
-        else:
-            self.fitness = algoritmos.coste_slot(self.contenido)
+        slots_diff = abs(self.contenido.sum()-205)
+        self.fitness = algoritmos.coste_slot(self.contenido) + self.alpha*slots_diff
+        
+        
+        # if self.contenido.sum() > 205 :
+        #     self.fitness = algoritmos.coste_slot(self.contenido) + self.alpha*slots_diff
+        # else:
+        #     self.fitness = algoritmos.coste_slot(self.contenido)
     
     def __init__(self,alpha = 1.5 ,numero_estaciones = 16,verbose=False):
         
@@ -56,6 +59,21 @@ class Individuo:
     def __repr__(self):
         return ("Individuo " + str(self.contenido)  + " total slots " + str(self.contenido.sum()) + " -- Fitness " + str(self.fitness) + " slot diff "+ str(self.contenido.sum()-205)+"\n")
     
+    
+    def mutar_v2(self,proba_mutacion_inf = 0.05,proba_mutacion_sup = 0.2):
+        porcentaje_mutacion = np.random.uniform(proba_mutacion_inf,proba_mutacion_sup)
+        numero_mutaciones = int(np.round(self.numero_estaciones*porcentaje_mutacion))
+        
+        for i in range(numero_mutaciones):
+            
+            valor = np.random.choice(np.arange(5,35))
+            posicion = np.random.choice(np.arange(0,15))
+            self.contenido[posicion] = valor
+        
+        if(self.contenido.sum() < 205):
+            restante = 205-self.contenido.sum()
+            self.contenido[np.random.choice(np.arange(0,15))] += restante
+        
     
     def mutar(self,proba_mutacion_inf = 0.05,proba_mutacion_sup = 0.2, verbose= False ):
         """
@@ -77,11 +95,12 @@ class Individuo:
         porcentaje_mutacion = np.random.uniform(proba_mutacion_inf,proba_mutacion_sup)
         numero_mutaciones = int(np.round(self.numero_estaciones*porcentaje_mutacion))
         
-        valores_modificadores = np.arange(1,numero_mutaciones+1)
-        # valores_modificadores = np.arange(1,10)
+        # valores_modificadores = np.arange(1,numero_mutaciones+1)
+        valores_modificadores = np.arange(1,10)
         np.random.shuffle(valores_modificadores)
         
         for i in range(numero_mutaciones):
+            # print("numero mutaciones " , numero_mutaciones )
             a = random.choice(np.arange(0,self.numero_estaciones))
             if(np.random.uniform(0,1) > 0.5):
                 # Suma valor a la estacion elegida
@@ -94,7 +113,8 @@ class Individuo:
                     print( "Posición modificada "  + str(a) + " valor restado " + str(valores_modificadores[i]) )
                 self.contenido[a] -= valores_modificadores[i]
         
+        # Aqui es donde se bloquea al calcular el fitness
+        # self.calculo_fitness_mod()
         
-        self.calculo_fitness_mod()
         if verbose:
             print(self)

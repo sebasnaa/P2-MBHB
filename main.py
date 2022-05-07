@@ -2,6 +2,9 @@ import Individuo
 import Poblacion
 from Individuo import Individuo
 from Poblacion import Poblacion
+from GB import genetico_basico
+
+import time
 
 
 
@@ -9,16 +12,32 @@ from Poblacion import Poblacion
 
 
 
-# ind_a = Individuo(alpha=1,verbose=True)
+def genetico(numero_poblacion=30,segundos_ejecucion=100,alpha=4):
+    start_time = time.time()
+    diff_time = 0
+
+    poblacion = Poblacion(numero_poblacion,alpha=alpha)
+
+
+    while(diff_time < segundos_ejecucion):
+        print(diff_time)
+        poblacion.actualizar_poblacion()
+        poblacion.calcular_elite()
+        poblacion.cruze_2_puntos_con_mutacion()
+        
+        # poblacion.mutar_poblacion()
+        # poblacion.actualizar_poblacion()
+        diff_time = (time.time() - start_time)
+        
+    print(poblacion.individuos)
 
 
 
-# ind_a.mutar(verbose=True)
+genetico(segundos_ejecucion=1800,alpha=5)
 
 
-p = Poblacion(numero_individuos=8,verbose=True)
-
-print("cruze")
+    
 
 
-p.cruze_2_puntos()
+
+# genetico_basico(numero_individuos=10)
