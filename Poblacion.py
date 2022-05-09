@@ -93,7 +93,7 @@ class Poblacion:
             punto_corte_b = 0
             distanciamiento = abs(punto_corte_b - punto_corte_a)
             # punto_corte_a == punto_corte_b or distanciamiento > 6:
-            while distanciamiento > 7:
+            while distanciamiento > 8:
                 punto_corte_a = random.choice(np.arange(0,15))
                 punto_corte_b = random.choice(np.arange(0,15))
                 distanciamiento = abs(punto_corte_b - punto_corte_a)

@@ -33,7 +33,7 @@ def genetico(numero_poblacion=30,segundos_ejecucion=100,alpha=4):
 
 
 
-genetico(segundos_ejecucion=1800,alpha=5)
+genetico(segundos_ejecucion=4000,alpha=2)
 
 
     

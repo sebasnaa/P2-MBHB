@@ -57,15 +57,14 @@ class Individuo:
     
     
     def __repr__(self):
-        return ("Individuo " + str(self.contenido)  + " total slots " + str(self.contenido.sum()) + " -- Fitness " + str(self.fitness) + " slot diff "+ str(self.contenido.sum()-205)+"\n")
+        return ("Individuo " + str(self.contenido)  + " total slots " + str(self.contenido.sum()) + " -- Fitness " + str(self.fitness) + " Km " +str(self.fitness-self.alpha*(self.contenido.sum()-205))  +  " slot diff "+ str(self.contenido.sum()-205)+"\n")
     
     
     def mutar_v2(self,proba_mutacion_inf = 0.05,proba_mutacion_sup = 0.2):
         porcentaje_mutacion = np.random.uniform(proba_mutacion_inf,proba_mutacion_sup)
         numero_mutaciones = int(np.round(self.numero_estaciones*porcentaje_mutacion))
         
-        for i in range(numero_mutaciones):
-            
+        for i in range(numero_mutaciones):            
             valor = np.random.choice(np.arange(5,35))
             posicion = np.random.choice(np.arange(0,15))
             self.contenido[posicion] = valor
