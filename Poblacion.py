@@ -4,7 +4,7 @@ from scipy import rand
 from Individuo import Individuo
 
 
-import algoritmos
+import algoritmosV2
 
 import copy
 
@@ -32,26 +32,38 @@ class Poblacion:
     def calcular_elite(self):
         sortedByFitness = sorted(self.individuos,key=lambda k: k.fitness)
         self.elite = sortedByFitness[0:5]
+        
    
     
-    def __init__(self,numero_individuos=20,alpha=1.5,limite_inferior_sumatorio=205,verbose=False):
+    def __init__(self,numero_individuos=20,alpha=1.5,limite_inferior_sumatorio=205,numero_elites=0):
+        """
+        Parametros
+        -------------
+        numero_individuos : ``int`` número de individuos de la población.
         
+        limite_inferior_sumatorio : ``int`` número minimo de slots para considerar al individuo válido. (Por defecto ``205``)
         
+        """
         self.numero_individuos = numero_individuos
         self.limite_inferior_sumatorio = limite_inferior_sumatorio
         # self.individuos = []
         self.individuos = np.array([])
+        
         for i in range(self.numero_individuos):
             ind = Individuo(alpha=alpha)
             self.individuos = np.append(self.individuos,ind)
             self.individuos
             
         self.individuos = sorted(self.individuos,key=lambda k: k.fitness)
-        self.elite = []
-        self.calcular_elite()
+        
         
         self.probabilidades_progenitores = []
         self.calculo_progenitor_probabilidad()
+        
+        if(numero_elites >0):
+            self.elite = []
+            self.calcular_elite()
+        
         
     def calculo_progenitor_probabilidad(self):
         # agregamos los indices un numero det de veces en base a su posicion
@@ -67,7 +79,7 @@ class Poblacion:
         self.probabilidades_progenitores = probabilidades.copy()
         
     def cruze_2_puntos_con_mutacion(self):       
-
+        # algoritmosV2.setSemilla()
         nueva_poblacion = []
         
         # Generamos el numero de hijos necesarios en base al numero de individuos de la población.
@@ -141,27 +153,28 @@ class Poblacion:
         self.individuos = copy.deepcopy(nueva_poblacion) 
         
         
-    def mutar_poblacion(self):
+    # def mutar_poblacion(self):
         
-        nueva_poblacion = []
-        for i in range(self.numero_individuos):
-            ind_aux = copy.deepcopy(self.individuos[i])
-            if ind_aux not in self.elite:
-                ind_aux.mutar()
-            if(np.array(ind_aux.contenido).sum() < 205):
-                total = 205-np.array(ind_aux.contenido).sum()
-                ind_aux.contenido[3] += total
+    #     nueva_poblacion = []
+    #     for i in range(self.numero_individuos):
+    #         ind_aux = copy.deepcopy(self.individuos[i])
+    #         if ind_aux not in self.elite:
+    #             ind_aux.mutar()
+    #         if(np.array(ind_aux.contenido).sum() < 205):
+    #             total = 205-np.array(ind_aux.contenido).sum()
+    #             ind_aux.contenido[3] += total
                 
-            # ind_aux.fitness = algoritmos.coste_slot(ind_aux.contenido)
-            nueva_poblacion.append(ind_aux)
+    #         # ind_aux.fitness = algoritmos.coste_slot(ind_aux.contenido)
+    #         nueva_poblacion.append(ind_aux)
         
-        self.individuos = copy.deepcopy(nueva_poblacion) 
+    #     self.individuos = copy.deepcopy(nueva_poblacion) 
         
     def actualizar_poblacion(self):
-        for i in range(self.numero_individuos):
+        for i in range(len(self.individuos)):
+            self.individuos[i].contenido = self.individuos[i].contenido
             slots_diff = self.individuos[i].contenido.sum()-205
-            self.individuos[i].fitness = algoritmos.coste_slot(self.individuos[i].contenido) + self.individuos[i].alpha*slots_diff
-            
+            self.individuos[i].fitness = algoritmosV2.coste_slot(self.individuos[i].contenido) + self.individuos[i].alpha*slots_diff
+            self.individuos[i].km = self.individuos[i].fitness - self.individuos[i].alpha*slots_diff
         
 
         

@@ -1,0 +1,31 @@
+CHC
+
+
+partimos de una poblacion y 
+realizamos un shuffle y cruzamos por pares 
+
+con un cruce parecido al blx-alpha o mismo cruze que geneitco aunque es mejor con blx-alpha
+
+blc-alpha centrado en los padres, en el intercambio se altera solo los que se cambian
+
+
+juntamos padre e hijos(se ordenan?) y compruebo la distancia , si no se cruza nadie decremento la distancia en 1
+
+
+en el reinicio copiamos un porcentaje de los mejores y el resto aleatorio 
+
+el criterio de parada es un nímero de reinicios
+
+
+-------------------------------------------------------------------------------------------------------------
+
+
+
+clearing ordenamos de mejor a peor, usamos kappa que determina el numero de individuos que se mantienen.
+
+Los que estan detro del radio los voy quitando y me voy quedando los mejores que estan fuera del radio siempre 
+que el kappa no este cubierto
+
+Para suavizar la distancia podemos establcer un rango, Ind -> 1     10   ind -> 12   podria entrar
+
+

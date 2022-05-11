@@ -4,6 +4,9 @@ import numpy as np
 
 import algoritmos
 
+
+import algoritmosV2
+
 class Individuo:
     """
     Clase que define nuestro concepto de individuo en nuestro problema.
@@ -34,23 +37,22 @@ class Individuo:
         número de slots total. (Por defecto ``205``)
         """
         slots_diff = abs(self.contenido.sum()-205)
-        self.fitness = algoritmos.coste_slot(self.contenido) + self.alpha*slots_diff
-        
-        
-        # if self.contenido.sum() > 205 :
-        #     self.fitness = algoritmos.coste_slot(self.contenido) + self.alpha*slots_diff
-        # else:
-        #     self.fitness = algoritmos.coste_slot(self.contenido)
+        self.fitness = algoritmosV2.coste_slot(self.contenido) + self.alpha*slots_diff
     
     def __init__(self,alpha = 1.5 ,numero_estaciones = 16,verbose=False):
         
         self.numero_estaciones = numero_estaciones
         self.alpha = alpha
+        # self.contenido = np.array(algoritmosV2.estado_inicial_random(),dtype=int)
+
+        num = random.randint(205,230)
         
-        # self.contenido = np.array(algoritmos.estado_inicial_random(),dtype=int)
-        self.contenido = np.array(algoritmos.greedy_inicializar(self.numero_estaciones,220),dtype=int)
+        self.contenido = np.array(algoritmosV2.greedy_inicializar(self.numero_estaciones,220),dtype=int)
         
-        self.calculo_fitness_mod()
+        slots_diff = abs(self.contenido.sum()-205)
+        self.fitness = algoritmosV2.coste_slot(self.contenido) + self.alpha*slots_diff
+        self.km = self.fitness - self.alpha*slots_diff
+        # self.calculo_fitness_mod()
         
         if verbose:
             print("Nuevo individuo ", self.contenido , " total slots " , self.contenido.sum(), " -- Fitness " , str(self.fitness)  , " slot diff ", self.contenido.sum()-205)
@@ -60,7 +62,15 @@ class Individuo:
         return ("Individuo " + str(self.contenido)  + " total slots " + str(self.contenido.sum()) + " -- Fitness " + str(self.fitness) + " Km " +str(self.fitness-self.alpha*(self.contenido.sum()-205))  +  " slot diff "+ str(self.contenido.sum()-205)+"\n")
     
     
+    def actualizar_individuo(self):
+        self.contenido = self.contenido
+        slots_diff = self.contenido.sum()-205
+        self.fitness = algoritmosV2.coste_slot(self.contenido) + self.alpha*slots_diff
+        self.km = self.fitness - self.alpha*slots_diff
+        
+    
     def mutar_v2(self,proba_mutacion_inf = 0.05,proba_mutacion_sup = 0.2):
+        # algoritmosV2.setSemilla()
         porcentaje_mutacion = np.random.uniform(proba_mutacion_inf,proba_mutacion_sup)
         numero_mutaciones = int(np.round(self.numero_estaciones*porcentaje_mutacion))
         
@@ -69,6 +79,27 @@ class Individuo:
             posicion = np.random.choice(np.arange(0,15))
             self.contenido[posicion] = valor
         
+        if(self.contenido.sum() < 205):
+            restante = 205-self.contenido.sum()
+            self.contenido[np.random.choice(np.arange(0,15))] += restante
+            
+    def mutar_en_chc(self,proba_mutacion_inf = 0.05,proba_mutacion_sup = 0.2,segmento_diferente = []):
+        # puede ser el valor a modificar 0, es decir, no modifico esa estacion o simepre se debe modificar
+        
+        
+        x = np.random.normal(loc=0, scale=1, size=(len(segmento_diferente)))
+        x = x.astype(int)
+        for i in range(len(segmento_diferente)):
+            
+            if(x[i] < 0):
+                valor = self.contenido[segmento_diferente[i]] + x[i]
+                if( valor < 0):
+                    self.contenido[segmento_diferente[i]] += (x[i]*-1)
+            else:
+                self.contenido[segmento_diferente[i]] += x[i]
+                
+            
+            
         if(self.contenido.sum() < 205):
             restante = 205-self.contenido.sum()
             self.contenido[np.random.choice(np.arange(0,15))] += restante
