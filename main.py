@@ -73,10 +73,12 @@ def genetico(numero_poblacion=30,segundos_ejecucion=100,alpha=4,verbose=False):
         # plt.plot(segundos, historico_slots)
         # plt.legend(["KM", "Slots"])
         # plt.show()
+        
+    return poblacion.individuos
 
   
 
-def chc(numero_poblacion=30,alpha=6,reinicios_salida = 1):
+def chc(numero_poblacion=30,alpha=6,reinicios_salida = 1,numero_elite = 5):
     poblacion = Poblacion(numero_poblacion,alpha=alpha)
     print("poblacion Inicial")
     print(poblacion.individuos)
@@ -118,13 +120,14 @@ def chc(numero_poblacion=30,alpha=6,reinicios_salida = 1):
         
         iguales = algoritmosV2.comparar_poblaciones(poblacion_anterior=poblacion_tmp,poblacion=poblacion)
         
+        
         if(iguales):
             distancia_umbral -= 1
         
         if(distancia_umbral == 0):
             # modificamos la poblacion cogemos el 10% de los mejores individuos 
             # y el resto se crean de forma aleatoria
-            for i in range(5,poblacion.numero_individuos):
+            for i in range(numero_elite,poblacion.numero_individuos):
                 ind = Individuo(alpha=alpha)
                 poblacion.individuos[i] = copy.deepcopy(ind)
             distancia_umbral = 4
@@ -141,10 +144,17 @@ def chc(numero_poblacion=30,alpha=6,reinicios_salida = 1):
     
   
     
+    
+     
+    
+    
+# genetico(segundos_ejecucion=10,alpha=5,verbose=True)
 
-# genetico(segundos_ejecucion=100,alpha=5,verbose=True)
-
-chc(numero_poblacion=30,alpha=5,reinicios_salida = 1)
+# chc(numero_poblacion=30,alpha=5,reinicios_salida = 1)
 
 
 
+p = Poblacion(numero_individuos=6)
+
+
+p.clearing(radio=14)
