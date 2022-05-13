@@ -1,12 +1,9 @@
 import random
 import numpy as np
-from scipy import rand
-from Individuo import Individuo
-
-
 import algoritmosV2
-
 import copy
+
+from Individuo import Individuo
 
 class Poblacion:
     """
@@ -44,6 +41,7 @@ class Poblacion:
         limite_inferior_sumatorio : ``int`` número minimo de slots para considerar al individuo válido. (Por defecto ``205``)
 
         """
+        
         self.numero_individuos = numero_individuos
         self.limite_inferior_sumatorio = limite_inferior_sumatorio
         # self.individuos = []
@@ -66,9 +64,10 @@ class Poblacion:
 
 
     def calculo_progenitor_probabilidad(self):
+        
         # agregamos los indices un numero det de veces en base a su posicion
         posicion_actual = 0
-        contador = self.numero_individuos
+        contador = len(self.individuos)
         probabilidades = []
         while(contador > 0):
             tmp = np.ones(contador)*posicion_actual
@@ -78,8 +77,8 @@ class Poblacion:
         probabilidades = np.array(probabilidades,dtype=int)
         self.probabilidades_progenitores = probabilidades.copy()
 
-    def cruze_2_puntos_con_mutacion(self):
-
+    def cruze_2_puntos_con_mutacion(self,clearing=False):
+        self.calculo_progenitor_probabilidad()
         nueva_poblacion = []
         # Generamos el numero de hijos necesarios en base al numero de individuos de la población.
         hijos = list()
@@ -87,18 +86,14 @@ class Poblacion:
         numero_hijos_validos = 0
 
         while(numero_hijos_validos < self.numero_individuos-len(self.elite)):
-        # for indice in range(self.numero_individuos-1):
-
-            # padre = self.individuos[random.choice(self.probabilidades_progenitores)]
-            # madre = self.individuos[random.choice(self.probabilidades_progenitores)]
 
             indice_padre = random.choice(self.probabilidades_progenitores)
             indice_madre = random.choice(self.probabilidades_progenitores)
-
-            padre = self.individuos[indice_padre]
-            madre = self.individuos[indice_madre]
-
-
+            
+            indices_progenitores = algoritmosV2.generar_indice_ponderado_posicion(len(self.individuos))
+            
+            padre = self.individuos[indices_progenitores[0]]
+            madre = self.individuos[indices_progenitores[1]]
 
             punto_corte_a = 0
             punto_corte_b = 0
@@ -116,15 +111,26 @@ class Poblacion:
             # numero_elementos_contenidos = abs(punto_corte_b - punto_corte_a) + 1
             # if numero_elementos_contenidos % 2 == 0:
 
+
+            # probabilidad de ambos hijios iguales o una random para cada uno
+            r = random.uniform(0,1)
+            
             # hijo formado por padre y segmento de madre
             hijo_1 = copy.deepcopy(padre)
-            hijo_1.contenido[punto_corte_a:punto_corte_b] = madre.contenido[punto_corte_a:punto_corte_b].copy()
-
+            if(not clearing):
+                hijo_1.contenido[punto_corte_a:punto_corte_b] = madre.contenido[punto_corte_a:punto_corte_b].copy()
+            else:
+                if(r < 0.8):
+                    hijo_1.contenido[punto_corte_a:punto_corte_b] = madre.contenido[punto_corte_a:punto_corte_b].copy()
             # # hijo formado por madre y segmento de padre
             hijo_2 = copy.deepcopy(madre)
-            hijo_2.contenido[punto_corte_a:punto_corte_b] = padre.contenido[punto_corte_a:punto_corte_b].copy()
-
-
+            if(not clearing):
+                hijo_2.contenido[punto_corte_a:punto_corte_b] = padre.contenido[punto_corte_a:punto_corte_b].copy()
+            else:
+                if(r < 0.8):
+                    hijo_2.contenido[punto_corte_a:punto_corte_b] = padre.contenido[punto_corte_a:punto_corte_b].copy()
+                    
+                    
             if(hijo_1.contenido.sum() > 205):
                 # print("hijo 1")
                 # hijo_1.calculo_fitness_mod()
@@ -152,23 +158,6 @@ class Poblacion:
         self.individuos = copy.deepcopy(nueva_poblacion)
 
 
-    # def mutar_poblacion(self):
-
-    #     nueva_poblacion = []
-    #     for i in range(self.numero_individuos):
-    #         ind_aux = copy.deepcopy(self.individuos[i])
-    #         if ind_aux not in self.elite:
-    #             ind_aux.mutar()
-    #         if(np.array(ind_aux.contenido).sum() < 205):
-    #             total = 205-np.array(ind_aux.contenido).sum()
-    #             ind_aux.contenido[3] += total
-
-    #         # ind_aux.fitness = algoritmos.coste_slot(ind_aux.contenido)
-    #         nueva_poblacion.append(ind_aux)
-
-    #     self.individuos = copy.deepcopy(nueva_poblacion)
-
-
 
     def actualizar_poblacion(self):
         for i in range(len(self.individuos)):
@@ -178,39 +167,74 @@ class Poblacion:
             self.individuos[i].km = self.individuos[i].fitness - self.individuos[i].alpha*slots_diff
 
 
-    def clearing(self,kappa = 2,radio = 4):
+    
+
+    def clearing(self,kappa = 2,radio = 4,numero_elites= 5,verbose=False):
         # modificar genetioc basico se incluye dentro del mismo este metodo
         # se aplica el multi modal indicando por parametro al GB
+        
         nichos = []
-        elementos_insertados = 0
+        nichos_return = []
+        pos_nicho = 0
+        elementos_insertados = 1
         poblacion_tmp = copy.deepcopy(self.individuos)
-
+        nichos = copy.deepcopy(poblacion_tmp[0:numero_elites])
         while(len(poblacion_tmp) > 0):
-            # se coge siempre al inicio el primero de la poblacion
+            if(verbose):
+                print("poblacion actual size", len(poblacion_tmp))
+                print(poblacion_tmp)
             nicho_tmp = []
-            ind_cabeza = copy.deepcopy(poblacion_tmp.pop(0))
-            print("individio comparacion ", ind_cabeza)
-            nicho_tmp.append(ind_cabeza)
-            for indice in range(0,len(poblacion_tmp)-1):
+            ind_cabeza = poblacion_tmp.pop(0)            
+            if(verbose):
+                print("individio seleccionado ", ind_cabeza, end="")
+            nicho_tmp.append(copy.deepcopy(ind_cabeza))
+            indices_agregar_en_nicho = []
+            indices_borrar_poblacion = []
+            for indice in range(len(poblacion_tmp)):
                 
-                distancia,seg_ = algoritmosV2.distancia_hamming(ind_cabeza,poblacion_tmp[indice])
-                print("A " , ind_cabeza)
-                print("B ", poblacion_tmp[indice])
-                print("distancia entre ind",distancia)
+                distancia,a = algoritmosV2.distancia_hamming(ind_cabeza,poblacion_tmp[indice])
+                if(verbose):
+                    print("indice actual  ", indice)
+                    print("A " , ind_cabeza, end="")
+                    print("B ", poblacion_tmp[indice], end="")
+                    print("distancia entre ind",distancia)
                 if(distancia <= radio):
-                    print("Radios menor o igual")
-                    if(len(nicho_tmp) < kappa):
-                        print("Agrego a nicho y borro")
-                        ind_dentro_radio = copy.deepcopy(poblacion_tmp.pop(indice))
-                        nicho_tmp.append(ind_dentro_radio)
+                    if(verbose):
+                        print("Radios menor o igual")
+                    if(elementos_insertados < kappa):
+                        if(verbose):
+                            print("Agrego a nicho")
+                        indices_agregar_en_nicho.append(indice)
+                        elementos_insertados += 1
                     else:
-                        print("Borro")
-                        poblacion_tmp.pop(indice)
-                    if(len(nicho_tmp) == kappa):
-                        nichos.append(nicho_tmp)
-                        nicho_tmp.clear()
+                        if(verbose):
+                            print("Borro", end="")
+                        indices_borrar_poblacion.append(indice)
+            
+            for i in range(len(indices_agregar_en_nicho)):
+                nicho_tmp.append(copy.deepcopy(poblacion_tmp[indices_agregar_en_nicho[i]]))
+                self.individuos.append(copy.deepcopy(poblacion_tmp[indices_agregar_en_nicho[i]]))
+            
+            
+            indices_borrar_poblacion.extend(indices_agregar_en_nicho)
+            
+            poblacion_tmp = algoritmosV2.borrar_elementos(poblacion_tmp,indices_borrar_poblacion)
+            elementos_insertados = 1
+            nichos.extend(copy.deepcopy(nicho_tmp))
+            nichos_return.insert(pos_nicho,copy.deepcopy(nicho_tmp))
+            pos_nicho += 1
+            nicho_tmp.clear()         
+                        
+                        
+                        
 
-        print("poblacion")
-        print(poblacion_tmp)
-        print("Nichos generados")
-        print(nichos)
+        # print("poblacion")
+        # print(poblacion_tmp)
+        self.individuos.clear()
+        
+        
+        self.individuos = copy.deepcopy(nichos)
+        
+        # print(self.individuos)
+        
+        return nichos_return

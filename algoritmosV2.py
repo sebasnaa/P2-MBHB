@@ -15,9 +15,7 @@ from sympy import true
 
 
  
-def setSemilla():
-    random.seed(32148756)
-    np.random.seed(32148756)
+
 
 def modificar_datos_acciones(fichero_acciones):
 
@@ -50,8 +48,8 @@ accionesMod = np.delete(accionesMod, 0, 0)
 lista_acciones = modificar_datos_acciones(accionesMod*2)
 
 
-# Esta llamada me afecta a todo el codigo
-# setSemilla()
+
+
 
 
 
@@ -129,7 +127,6 @@ def estacion_cercana(estacion,bicicletas,bicicletas_en_slots,huecos_disponibles_
     
     
 def generar_vecinos_con_offset_punto(solucion_actual, limite_vecinos, granularidad,punto_partida):
-    setSemilla()
     vecinos_generados = []
     orden_numerico = np.arange(0, solucion_actual.shape[0])
     lista_permutaciones_posibles = itertools.permutations(orden_numerico, 2)
@@ -178,7 +175,6 @@ def inicializar_greedy(solucionInicial,limite_bicicletas):
     return salida
 
 def estado_inicial_random():
-    # setSemilla()
     random_list = np.random.uniform(0, 1, 16)
 
     for indice in range(16):
@@ -188,7 +184,6 @@ def estado_inicial_random():
         aux = random_list[indice] * multiplicador
 
         if (aux > 50):
-            # setSemilla()
             aux = np.random.uniform(0, 50, 1)
 
         random_list[indice] = aux
@@ -200,7 +195,6 @@ def estado_inicial_random():
 
 
 def greedy_inicializar(dimension,limite_elementos):
-    # setSemilla()
     arr = np.zeros(dimension)
     for i in range(limite_elementos):
         valor = random.randint(0, dimension)
@@ -242,7 +236,6 @@ def coste_slot(slot_por_estaciones):
 
 
 def busqueda_local(solucion_inicial):
-    setSemilla()
     numero_evaluaciones = 0
     coste_minimo = math.inf
 
@@ -263,7 +256,6 @@ def busqueda_local(solucion_inicial):
     mejora = False
     start_time = time.time()
     vecinos_totales = 240
-    setSemilla()
     r = random.randint(0, 240)
     offset = r % 240
 
@@ -285,7 +277,6 @@ def busqueda_local(solucion_inicial):
                 numero_evaluaciones += 1
                 slot_por_estaciones = aux.copy()
                 coste_mejor = coste_scand
-                setSemilla()
                 r = random.randint(0, 240)
                 offset = r
                 # Encuentro uno mejor reinicio el contador de vecinos de esta nueva solucion que mejora
@@ -313,8 +304,17 @@ def busqueda_local(solucion_inicial):
     return slot_por_estaciones,coste_mejor
 
 
+def generar_indice_ponderado_posicion(dimension,numero_indices_resultantes = 2):
+    """
+    Genera un indice sobre una lista dando mayor probabilidad al inicio de la lista reduciendo según se desciende
+    """
+    lista_indices = list(np.arange(dimension))
+    lista_indices.reverse()
+    lista_pesos = list(np.linspace(1,dimension*10,dimension))
+    indices_random_probabilidad = random.choices(lista_indices,weights=lista_pesos,k = numero_indices_resultantes)
 
-
+    return indices_random_probabilidad
+    
 def calcular_indices_padres_desordenados(dimension):
     # siempre realiza los mismos cambios
     indices = np.arange(0,dimension)
@@ -337,7 +337,9 @@ def distancia_hamming(ind_1,ind_2,diferencia_permitida= 0):
     
     for i in range(0,diferencia_permitida+1):
         rep += diff.count(i)
-    return (16-rep),posiciones_diferentes
+        
+    dif = 16-rep
+    return dif,posiciones_diferentes
 
 def blx_alpha_pc(padre,madre,posiciones_diferentes):
     
@@ -379,7 +381,10 @@ def comparar_poblaciones(poblacion_anterior,poblacion):
     iguales = true
     while(i<poblacion.numero_individuos and iguales):
         iguales = np.array_equal(poblacion_anterior[i].contenido,poblacion.individuos[i].contenido) 
-        # print(iguales , "  " , i)
         i+=1
     return iguales
        
+
+
+def borrar_elementos(array,indices):
+        return [item for i, item in enumerate(array) if i not in indices]

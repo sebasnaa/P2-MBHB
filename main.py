@@ -1,6 +1,5 @@
 # from random import random
 import copy
-import matplotlib.pyplot as plt
 import random
 import numpy as np
 import Individuo
@@ -17,12 +16,9 @@ import matplotlib.animation as animation
 
 import algoritmosV2
 
-# import algoritmos
-
-# import algoritmosV2
 
 
-def genetico(numero_poblacion=30,segundos_ejecucion=100,alpha=4,verbose=False):
+def genetico(numero_poblacion=30,generaciones_limite = 5000,segundos_ejecucion=100,alpha=4,verbose=False):
     
     historico_km = []
     historico_slots = []
@@ -34,6 +30,7 @@ def genetico(numero_poblacion=30,segundos_ejecucion=100,alpha=4,verbose=False):
     historico_km.append(poblacion.individuos[0].km)
     historico_slots.append(poblacion.individuos[0].contenido.sum())
     segundos.append(0)
+    generacion = 0
     
     # plt.ion()
     # fig = plt.figure()
@@ -44,7 +41,7 @@ def genetico(numero_poblacion=30,segundos_ejecucion=100,alpha=4,verbose=False):
     # y.append(poblacion.individuos[0].km)
     # y2.append(poblacion.individuos[0].contenido.sum())
     
-    while(diff_time < segundos_ejecucion):
+    while(generacion < generaciones_limite):
         
         # new_y=poblacion.individuos[0].km
         # new_y2 = poblacion.individuos[0].contenido.sum()
@@ -58,7 +55,7 @@ def genetico(numero_poblacion=30,segundos_ejecucion=100,alpha=4,verbose=False):
         # plt.pause(0.1) 
         
         
-        print(diff_time)
+        print(diff_time , " ", generacion)
         poblacion.actualizar_poblacion()
         poblacion.calcular_elite()
         poblacion.cruze_2_puntos_con_mutacion()
@@ -66,6 +63,7 @@ def genetico(numero_poblacion=30,segundos_ejecucion=100,alpha=4,verbose=False):
         historico_km.append(poblacion.individuos[0].km)
         historico_slots.append(poblacion.individuos[0].contenido.sum())
         diff_time = (time.time() - start_time)
+        generacion+= 1
 
     if(verbose):
         print(poblacion.individuos)
@@ -145,16 +143,40 @@ def chc(numero_poblacion=30,alpha=6,reinicios_salida = 1,numero_elite = 5):
   
     
     
-     
+def multi_modal(numero_poblacion=30,segundos_ejecucion=20,alpha=5,radio = 4):
+ 
+    start_time = time.time()
+    diff_time = 0
+    poblacion = Poblacion(numero_individuos=numero_poblacion,alpha=alpha,numero_elites=5)
     
     
-# genetico(segundos_ejecucion=10,alpha=5,verbose=True)
+    generacion = 0
+    # cada generacion necesita +- 0.0200000000000000 s
+    while(generacion < 100):       
+        
+        print(diff_time)
+        poblacion.actualizar_poblacion()
+        poblacion.calcular_elite()
+        poblacion.cruze_2_puntos_con_mutacion()
+        diff_time = (time.time() - start_time)
+        if(generacion % 5 == 0):
+            nichos = poblacion.clearing(radio=radio)
+            poblacion.cruze_2_puntos_con_mutacion(clearing=True)
+        generacion += 1
+        
+    print(poblacion.individuos)    
+    print("nichos")
+    # print(nichos)
+    
+    
+    
+random.seed(132456987)
+np.random.seed(132456987)
+genetico(generaciones_limite = 6000,alpha=5,verbose=True)
 
 # chc(numero_poblacion=30,alpha=5,reinicios_salida = 1)
 
+# multi_modal(numero_poblacion=10,alpha=5,radio=4,segundos_ejecucion=10)
 
 
-p = Poblacion(numero_individuos=6)
 
-
-p.clearing(radio=14)

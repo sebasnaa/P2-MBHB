@@ -39,14 +39,8 @@ accionesMod = np.delete(accionesMod, 0, 0)
 
 lista_acciones = modificar_datos_acciones(accionesMod*2)
 
-global global_seed
-global_seed = 10000
 
 
-def setSemilla():
-    random.seed(global_seed)
-    aleatorio = np.random.RandomState(global_seed)
-    return aleatorio
 
 
 def accion_posible(bicicletas_input,estacion,bicicletas_en_slots,huecos_disponibles_en_slots):
@@ -159,7 +153,7 @@ def generar_vecinos_con_offset_punto(solucion_actual, limite_vecinos, granularid
 
 
 def inicializar_greedy(solucionInicial,limite_bicicletas):
-    setSemilla()
+    
     suma = np.array(solucionInicial).sum()
     multiplicador = limite_bicicletas/suma
 
@@ -179,7 +173,6 @@ def estado_inicial_random():
         aux = random_list[indice] * multiplicador
 
         if (aux > 50):
-            setSemilla()
             aux = np.random.uniform(0, 50, 1)
 
         random_list[indice] = aux
@@ -191,7 +184,6 @@ def estado_inicial_random():
 
 
 def greedy_inicializar(dimension,limite_elementos):
-    setSemilla()
     arr = np.zeros(dimension)
     for i in range(limite_elementos):
         valor = random.randint(0, dimension)
@@ -234,7 +226,6 @@ def coste_slot(slot_por_estaciones):
 
 def busqueda_local(solucion_inicial):
     
-    setSemilla()
     numero_evaluaciones = 0
     coste_minimo = math.inf
 
@@ -276,7 +267,6 @@ def busqueda_local(solucion_inicial):
                 numero_evaluaciones += 1
                 slot_por_estaciones = aux.copy()
                 coste_mejor = coste_scand
-                setSemilla()
                 r = random.randint(0, 240)
                 offset = r
                 # Encuentro uno mejor reinicio el contador de vecinos de esta nueva solucion que mejora

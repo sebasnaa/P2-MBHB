@@ -1,11 +1,8 @@
 import random
 import numpy as np
-
-
-import algoritmos
-
-
 import algoritmosV2
+
+
 
 class Individuo:
     """
@@ -70,7 +67,6 @@ class Individuo:
         
     
     def mutar_v2(self,proba_mutacion_inf = 0.05,proba_mutacion_sup = 0.2):
-        # algoritmosV2.setSemilla()
         porcentaje_mutacion = np.random.uniform(proba_mutacion_inf,proba_mutacion_sup)
         numero_mutaciones = int(np.round(self.numero_estaciones*porcentaje_mutacion))
         
@@ -80,8 +76,10 @@ class Individuo:
             self.contenido[posicion] = valor
         
         if(self.contenido.sum() < 205):
-            restante = 205-self.contenido.sum()
-            self.contenido[np.random.choice(np.arange(0,15))] += restante
+            self.contenido[0] = 1500
+        # if(self.contenido.sum() < 205):
+        #     restante = 205-self.contenido.sum()
+        #     self.contenido[np.random.choice(np.arange(0,15))] += restante
             
     def mutar_en_chc(self,proba_mutacion_inf = 0.05,proba_mutacion_sup = 0.2,segmento_diferente = []):
         # puede ser el valor a modificar 0, es decir, no modifico esa estacion o simepre se debe modificar
