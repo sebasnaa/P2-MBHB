@@ -355,8 +355,6 @@ def blx_alpha_pc(padre,madre,posiciones_diferentes):
         indice = segmento_a[k]
         hijo_1.contenido[indice] = madre.contenido[indice].copy()
         
-
-    # hijo_1.contenido[8:16] = madre.contenido[0:8].copy()
     
     
     # # hijo formado por madre y segmento de padre  
@@ -369,6 +367,8 @@ def blx_alpha_pc(padre,madre,posiciones_diferentes):
     hijo_1.mutar_en_chc(segmento_diferente = segmento_a)
     hijo_2.mutar_en_chc(segmento_diferente = segmento_b)
     
+    
+    
     hijo_1.actualizar_individuo()
     hijo_2.actualizar_individuo()
     
@@ -378,7 +378,7 @@ def blx_alpha_pc(padre,madre,posiciones_diferentes):
 def comparar_poblaciones(poblacion_anterior,poblacion):
     
     i = 0
-    iguales = true
+    iguales = True
     while(i<poblacion.numero_individuos and iguales):
         iguales = np.array_equal(poblacion_anterior[i].contenido,poblacion.individuos[i].contenido) 
         i+=1

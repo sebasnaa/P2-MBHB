@@ -86,9 +86,6 @@ class Poblacion:
         numero_hijos_validos = 0
 
         while(numero_hijos_validos < self.numero_individuos-len(self.elite)):
-
-            indice_padre = random.choice(self.probabilidades_progenitores)
-            indice_madre = random.choice(self.probabilidades_progenitores)
             
             indices_progenitores = algoritmosV2.generar_indice_ponderado_posicion(len(self.individuos))
             
@@ -99,7 +96,7 @@ class Poblacion:
             punto_corte_b = 0
             distanciamiento = abs(punto_corte_b - punto_corte_a)
             # punto_corte_a == punto_corte_b or distanciamiento > 6:
-            while distanciamiento > 8:
+            while distanciamiento > 6:
                 punto_corte_a = random.choice(np.arange(0,15))
                 punto_corte_b = random.choice(np.arange(0,15))
                 distanciamiento = abs(punto_corte_b - punto_corte_a)
@@ -111,43 +108,34 @@ class Poblacion:
             # numero_elementos_contenidos = abs(punto_corte_b - punto_corte_a) + 1
             # if numero_elementos_contenidos % 2 == 0:
 
-
-            # probabilidad de ambos hijios iguales o una random para cada uno
-            r = random.uniform(0,1)
             
             # hijo formado por padre y segmento de madre
             hijo_1 = copy.deepcopy(padre)
             if(not clearing):
                 hijo_1.contenido[punto_corte_a:punto_corte_b] = madre.contenido[punto_corte_a:punto_corte_b].copy()
             else:
-                if(r < 0.8):
+                if(random.uniform(0,1) < 0.8):
                     hijo_1.contenido[punto_corte_a:punto_corte_b] = madre.contenido[punto_corte_a:punto_corte_b].copy()
             # # hijo formado por madre y segmento de padre
             hijo_2 = copy.deepcopy(madre)
             if(not clearing):
                 hijo_2.contenido[punto_corte_a:punto_corte_b] = padre.contenido[punto_corte_a:punto_corte_b].copy()
             else:
-                if(r < 0.8):
+                if(random.uniform(0,1) < 0.8):
                     hijo_2.contenido[punto_corte_a:punto_corte_b] = padre.contenido[punto_corte_a:punto_corte_b].copy()
                     
                     
             if(hijo_1.contenido.sum() > 205):
-                # print("hijo 1")
-                # hijo_1.calculo_fitness_mod()
-                # slots_diff = abs(hijo_1.contenido.sum()-205)
-                # hijo_1.fitness = algoritmos.coste_slot(hijo_1.contenido) + hijo_1.alpha*slots_diff
-                hijo_1.mutar_v2()
-                hijos.insert(numero_hijos_validos,hijo_1)
-                numero_hijos_validos += 1
+                hijo_valido = hijo_1.mutar_v2()
+                if(hijo_valido):
+                    hijos.insert(numero_hijos_validos,hijo_1)
+                    numero_hijos_validos += 1
 
             if(hijo_2.contenido.sum() > 205):
-                # print("hijo 2")
-                # hijo_2.calculo_fitness_mod()
-                # slots_diff = abs(hijo_2.contenido.sum()-205)
-                # hijo_2.fitness = algoritmos.coste_slot(hijo_2.contenido) + hijo_2.alpha*slots_diff
-                hijo_2.mutar_v2()
-                hijos.insert(numero_hijos_validos,hijo_2)
-                numero_hijos_validos += 1
+                hijo_valido = hijo_2.mutar_v2()
+                if(hijo_valido):
+                    hijos.insert(numero_hijos_validos,hijo_2)
+                    numero_hijos_validos += 1
 
 
         # Agregamos la elite a la nueva población.
@@ -156,7 +144,7 @@ class Poblacion:
         nueva_poblacion = sorted(nueva_poblacion,key=lambda k: k.fitness)
 
         self.individuos = copy.deepcopy(nueva_poblacion)
-
+       
 
 
     def actualizar_poblacion(self):

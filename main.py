@@ -1,5 +1,7 @@
 # from random import random
 import copy
+from lib2to3.pgen2.token import RPAR
+from operator import ge
 import random
 import numpy as np
 import Individuo
@@ -76,7 +78,7 @@ def genetico(numero_poblacion=30,generaciones_limite = 5000,segundos_ejecucion=1
 
   
 
-def chc(numero_poblacion=30,alpha=6,reinicios_salida = 1,numero_elite = 5):
+def chc(numero_poblacion=30,alpha=6,generaciones_limite=500,reinicios_salida = 1,numero_elite = 5):
     poblacion = Poblacion(numero_poblacion,alpha=alpha)
     print("poblacion Inicial")
     print(poblacion.individuos)
@@ -87,11 +89,9 @@ def chc(numero_poblacion=30,alpha=6,reinicios_salida = 1,numero_elite = 5):
     diff_time = 0
     
     sol_ini = copy.deepcopy(poblacion.individuos[0])
-    
-    # diff_time = (time.time() - start_time)
-    # reinicios < reinicios_salida
-    while(diff_time < 100):
-        print(diff_time)
+    generacion = 0
+    while(generacion < generaciones_limite):
+        print(diff_time, "  ", generacion)
         # print(poblacion.individuos[0])
         
         poblacion_tmp = copy.deepcopy(poblacion.individuos)
@@ -110,7 +110,6 @@ def chc(numero_poblacion=30,alpha=6,reinicios_salida = 1,numero_elite = 5):
                 poblacion.individuos.append(hijo_1)
                 poblacion.individuos.append(hijo_2)
                 
-        
         
         poblacion.individuos = sorted(poblacion.individuos,key=lambda k: k.fitness)
         poblacion.individuos = poblacion.individuos[0:poblacion.numero_individuos]
@@ -131,19 +130,18 @@ def chc(numero_poblacion=30,alpha=6,reinicios_salida = 1,numero_elite = 5):
             distancia_umbral = 4
             reinicios += 1
         diff_time = (time.time() - start_time)
+        generacion += 1
     
     print("poblacion final con nº reeiniciaio ", reinicios)
     print(poblacion.individuos)
     print("inicio ")
     print(sol_ini)
-    # print(poblacion.individuos)
-    # print("ant")
-    # print(poblacion_tmp)        
+   
     
   
     
     
-def multi_modal(numero_poblacion=30,segundos_ejecucion=20,alpha=5,radio = 4):
+def multi_modal(numero_poblacion=30,generacion_limite=500,alpha=5,radio = 4):
  
     start_time = time.time()
     diff_time = 0
@@ -172,11 +170,15 @@ def multi_modal(numero_poblacion=30,segundos_ejecucion=20,alpha=5,radio = 4):
     
 random.seed(132456987)
 np.random.seed(132456987)
-genetico(generaciones_limite = 6000,alpha=5,verbose=True)
 
-# chc(numero_poblacion=30,alpha=5,reinicios_salida = 1)
+
+# genetico(generaciones_limite = 500,alpha=5,verbose=True)
+
+chc(numero_poblacion=30,alpha=5,generaciones_limite=5000,reinicios_salida = 1)
 
 # multi_modal(numero_poblacion=10,alpha=5,radio=4,segundos_ejecucion=10)
+
+
 
 
 
