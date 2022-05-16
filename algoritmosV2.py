@@ -299,7 +299,7 @@ def busqueda_local(solucion_inicial):
             mejora = False
 
     # print(slot_por_estaciones , "coste mejor ",coste_mejor , " " , "--- %s seconds ---" % (time.time() - start_time))
-    # print("evaluaciones ", numero_evaluaciones)
+    # print(numero_evaluaciones,",")
     
     return slot_por_estaciones,coste_mejor
 
@@ -324,16 +324,12 @@ def calcular_indices_padres_desordenados(dimension):
 
 def distancia_hamming(ind_1,ind_2,diferencia_permitida= 0):
     # numero de estaciones diferentes entre padre y madre
-    # print(ind_1.contenido)
-    # print(ind_2.contenido)
     diff = list(abs(ind_1.contenido - ind_2.contenido))
     rep = 0
     posiciones_diferentes = []
     for k in range(0,16):
         if(diff[k] != diferencia_permitida):
             posiciones_diferentes.append(k)
-    
-    # print("pos di", posiciones_diferentes)
     
     for i in range(0,diferencia_permitida+1):
         rep += diff.count(i)
@@ -347,7 +343,7 @@ def blx_alpha_pc(padre,madre,posiciones_diferentes):
     segmento_a = posiciones_diferentes[0:dim]
     segmento_b = posiciones_diferentes[dim:(2*dim)+1]
     
-    # cero una copia del padre y de la madre y a estos hijos las posiciones que eran diferentes entre padre y madre cada mitad la pasa a cada hijo
+    # creo una copia del padre y de la madre y a estos hijos las posiciones que eran diferentes entre padre y madre cada mitad la pasa a cada hijo
     
     # hijo formado por las estaciones quee difieren entre los padre, la mitad para cada hijo
     hijo_1 = copy.deepcopy(padre)
@@ -362,15 +358,13 @@ def blx_alpha_pc(padre,madre,posiciones_diferentes):
     for k in range(len(segmento_b)):
         indice = segmento_b[k]
         hijo_2.contenido[indice] = padre.contenido[indice].copy()
-    # hijo_2.contenido[0:8] = padre.contenido[8:16].copy()
-    
+  
     hijo_1.mutar_en_chc(segmento_diferente = segmento_a)
     hijo_2.mutar_en_chc(segmento_diferente = segmento_b)
     
-    
-    
     hijo_1.actualizar_individuo()
     hijo_2.actualizar_individuo()
+    
     
     return hijo_1,hijo_2
 

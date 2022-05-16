@@ -1,8 +1,0 @@
-
-
-
-
-hacer dibujo como los puntos se van agrupando con el paso de generaciones
-
-hacer dibujo del mapa dinamico con circulos usar ploty
-

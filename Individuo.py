@@ -69,12 +69,15 @@ class Individuo:
     def mutar_v2(self,proba_mutacion_inf = 0.05,proba_mutacion_sup = 0.2):
         """
         Aplica una mutación sobre el individuo en base al porcentaje establecido.
+        
         Parametros
         -------------
         proba_mutacion_inf : ``float`` valor % minimo a mutar del individuo.
         
         proba_mutacion_sup : ``float`` valor % maximo a mutar del individuo.
         
+        return : ``bool`` si el tras la mutación es válido el individuo
+        -------------
         """
         porcentaje_mutacion = np.random.uniform(proba_mutacion_inf,proba_mutacion_sup)
         numero_mutaciones = int(np.round(self.numero_estaciones*porcentaje_mutacion))
@@ -90,18 +93,11 @@ class Individuo:
             posicion = np.random.choice(np.arange(0,15))
             valor = self.contenido[posicion] + (valores[i])
             if(valor < 0):
-                self.contenido[posicion] += (valores[i]*(-1))
+                self.contenido[posicion] += abs(valores[i])
             else:
                 self.contenido[posicion] += (valores[i])
             
-            # if(self.contenido[posicion] + valores[i] < 0):
-            #     self.contenido[posicion] += (valores[i]*(-1))
-            # else:
-            #     self.contenido[posicion] += (valores[i])
-        
-                
         if(self.contenido.sum() < 205):
-            # self.contenido[0] = 1500
             return False
         return True
             
@@ -140,46 +136,46 @@ class Individuo:
         
         
     
-    def mutar(self,proba_mutacion_inf = 0.05,proba_mutacion_sup = 0.2, verbose= False ):
-        """
-        Aplica una mutación sobre el individuo en base al porcentaje establecido.
+    # def mutar(self,proba_mutacion_inf = 0.05,proba_mutacion_sup = 0.2, verbose= False ):
+    #     """
+    #     Aplica una mutación sobre el individuo en base al porcentaje establecido.
         
         
-        Parametros
-        -------------
-        proba_mutacion_inf : ``float`` valor % minimo a mutar del individuo.
+    #     Parametros
+    #     -------------
+    #     proba_mutacion_inf : ``float`` valor % minimo a mutar del individuo.
         
-        proba_mutacion_sup : ``float`` valor % maximo a mutar del individuo.
+    #     proba_mutacion_sup : ``float`` valor % maximo a mutar del individuo.
         
-        verbose : ``bool`` mostrar cambios pre y post mutación. (Por defecto ``False``)
+    #     verbose : ``bool`` mostrar cambios pre y post mutación. (Por defecto ``False``)
         
-        """
+    #     """
         
-        # Hay que mutar entre un 5% y 20% de cada cruze
+    #     # Hay que mutar entre un 5% y 20% de cada cruze
         
-        porcentaje_mutacion = np.random.uniform(proba_mutacion_inf,proba_mutacion_sup)
-        numero_mutaciones = int(np.round(self.numero_estaciones*porcentaje_mutacion))
+    #     porcentaje_mutacion = np.random.uniform(proba_mutacion_inf,proba_mutacion_sup)
+    #     numero_mutaciones = int(np.round(self.numero_estaciones*porcentaje_mutacion))
         
-        # valores_modificadores = np.arange(1,numero_mutaciones+1)
-        valores_modificadores = np.arange(1,10)
-        np.random.shuffle(valores_modificadores)
+    #     # valores_modificadores = np.arange(1,numero_mutaciones+1)
+    #     valores_modificadores = np.arange(1,10)
+    #     np.random.shuffle(valores_modificadores)
         
-        for i in range(numero_mutaciones):
-            # print("numero mutaciones " , numero_mutaciones )
-            a = random.choice(np.arange(0,self.numero_estaciones))
-            if(np.random.uniform(0,1) > 0.5):
-                # Suma valor a la estacion elegida
-                if verbose:
-                    print( "Posición modificada "  + str(a) + " valor sumado " + str(valores_modificadores[i]) )
-                self.contenido[a] += valores_modificadores[i]
-            else:
-                # Resto valor a la estacion elegida
-                if verbose:
-                    print( "Posición modificada "  + str(a) + " valor restado " + str(valores_modificadores[i]) )
-                self.contenido[a] -= valores_modificadores[i]
+    #     for i in range(numero_mutaciones):
+    #         # print("numero mutaciones " , numero_mutaciones )
+    #         a = random.choice(np.arange(0,self.numero_estaciones))
+    #         if(np.random.uniform(0,1) > 0.5):
+    #             # Suma valor a la estacion elegida
+    #             if verbose:
+    #                 print( "Posición modificada "  + str(a) + " valor sumado " + str(valores_modificadores[i]) )
+    #             self.contenido[a] += valores_modificadores[i]
+    #         else:
+    #             # Resto valor a la estacion elegida
+    #             if verbose:
+    #                 print( "Posición modificada "  + str(a) + " valor restado " + str(valores_modificadores[i]) )
+    #             self.contenido[a] -= valores_modificadores[i]
         
-        # Aqui es donde se bloquea al calcular el fitness
-        # self.calculo_fitness_mod()
+    #     # Aqui es donde se bloquea al calcular el fitness
+    #     # self.calculo_fitness_mod()
         
-        if verbose:
-            print(self)
+    #     if verbose:
+    #         print(self)

@@ -1,9 +1,7 @@
-# from random import random
 import copy
-from lib2to3.pgen2.token import RPAR
-from operator import ge
 import random
 import numpy as np
+import pandas as pd
 import Individuo
 import Poblacion
 from Individuo import Individuo
@@ -20,7 +18,7 @@ import algoritmosV2
 
 
 
-def genetico(numero_poblacion=30,generaciones_limite = 5000,segundos_ejecucion=100,alpha=4,verbose=False):
+def genetico(numero_poblacion=30,generaciones_limite = 5000,segundos_ejecucion=100,alpha=5,verbose=False):
     
     historico_km = []
     historico_slots = []
@@ -33,6 +31,7 @@ def genetico(numero_poblacion=30,generaciones_limite = 5000,segundos_ejecucion=1
     historico_slots.append(poblacion.individuos[0].contenido.sum())
     segundos.append(0)
     generacion = 0
+    historico = []
     
     # plt.ion()
     # fig = plt.figure()
@@ -58,9 +57,15 @@ def genetico(numero_poblacion=30,generaciones_limite = 5000,segundos_ejecucion=1
         
         
         print(diff_time , " ", generacion)
+        
+        
         poblacion.actualizar_poblacion()
+        historico.append(poblacion.individuos[0])
         poblacion.calcular_elite()
-        poblacion.cruze_2_puntos_con_mutacion()
+        poblacion.cruce_2_puntos_con_mutacion()
+        
+        
+        
         segundos.append(diff_time)
         historico_km.append(poblacion.individuos[0].km)
         historico_slots.append(poblacion.individuos[0].contenido.sum())
@@ -74,28 +79,30 @@ def genetico(numero_poblacion=30,generaciones_limite = 5000,segundos_ejecucion=1
         # plt.legend(["KM", "Slots"])
         # plt.show()
         
-    return poblacion.individuos
+    return historico
 
   
 
-def chc(numero_poblacion=30,alpha=6,generaciones_limite=500,reinicios_salida = 1,numero_elite = 5):
+def chc(numero_poblacion=30,alpha=6,generaciones_limite=500,distancia_umbral = 6,numero_elite = 5):
     poblacion = Poblacion(numero_poblacion,alpha=alpha)
     print("poblacion Inicial")
     print(poblacion.individuos)
     reinicios = 0
-    distancia_umbral = 4
     poblacion_tmp = []
     start_time = time.time()
     diff_time = 0
     
     sol_ini = copy.deepcopy(poblacion.individuos[0])
     generacion = 0
+    historico = []
+    historico.append(poblacion.individuos[0])
+    
     while(generacion < generaciones_limite):
         print(diff_time, "  ", generacion)
         # print(poblacion.individuos[0])
         
         poblacion_tmp = copy.deepcopy(poblacion.individuos)
-        
+        historico.append(poblacion.individuos[0])
         # poblacion_tmp = poblacion.individuos.copy()
         
         indices_padres_desordenados = algoritmosV2.calcular_indices_padres_desordenados(poblacion.numero_individuos)
@@ -107,6 +114,7 @@ def chc(numero_poblacion=30,alpha=6,generaciones_limite=500,reinicios_salida = 1
             if(dis_padres > distancia_umbral):
                 
                 hijo_1,hijo_2 = algoritmosV2.blx_alpha_pc(padre,madre,posiciones_diferentes)
+               
                 poblacion.individuos.append(hijo_1)
                 poblacion.individuos.append(hijo_2)
                 
@@ -131,54 +139,70 @@ def chc(numero_poblacion=30,alpha=6,generaciones_limite=500,reinicios_salida = 1
             reinicios += 1
         diff_time = (time.time() - start_time)
         generacion += 1
+        
     
     print("poblacion final con nº reeiniciaio ", reinicios)
     print(poblacion.individuos)
-    print("inicio ")
-    print(sol_ini)
-   
+    
+    return historico
     
   
     
     
-def multi_modal(numero_poblacion=30,generacion_limite=500,alpha=5,radio = 4):
+def multi_modal(numero_poblacion=30,generaciones_limite=100,alpha=5,radio = 4):
  
     start_time = time.time()
     diff_time = 0
     poblacion = Poblacion(numero_individuos=numero_poblacion,alpha=alpha,numero_elites=5)
+    historico = []
     
     
     generacion = 0
     # cada generacion necesita +- 0.0200000000000000 s
-    while(generacion < 100):       
+    while(generacion < generaciones_limite):       
         
-        print(diff_time)
+        print(diff_time, " ", generacion)
         poblacion.actualizar_poblacion()
+        historico.append(poblacion.individuos[0])
         poblacion.calcular_elite()
-        poblacion.cruze_2_puntos_con_mutacion()
+        poblacion.cruce_2_puntos_con_mutacion()
         diff_time = (time.time() - start_time)
         if(generacion % 5 == 0):
             nichos = poblacion.clearing(radio=radio)
-            poblacion.cruze_2_puntos_con_mutacion(clearing=True)
+            poblacion.cruce_2_puntos_con_mutacion(clearing=True)
         generacion += 1
         
     print(poblacion.individuos)    
     print("nichos")
     # print(nichos)
     
+    return historico
     
-    
+
+
+
+#####################################
+#-----------------------------------#
+#####################################
+
+
+# random.seed(258741369)
+# np.random.seed(258741369)
+
 random.seed(132456987)
 np.random.seed(132456987)
 
+# historico = genetico(generaciones_limite = 20_000,alpha=5,verbose=True)
 
-# genetico(generaciones_limite = 500,alpha=5,verbose=True)
+# chc(numero_poblacion=30,alpha=5,generaciones_limite=20_000,distancia_umbral = 4)
 
-chc(numero_poblacion=30,alpha=5,generaciones_limite=5000,reinicios_salida = 1)
-
-# multi_modal(numero_poblacion=10,alpha=5,radio=4,segundos_ejecucion=10)
-
+# multi_modal(numero_poblacion=30,generaciones_limite=20_000,alpha=5,radio=4)
 
 
+
+
+# x = np.random.normal(loc=0, scale=4, size=(1000))
+# plt.hist(x)
+# plt.show()
 
 

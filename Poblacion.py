@@ -44,7 +44,6 @@ class Poblacion:
         
         self.numero_individuos = numero_individuos
         self.limite_inferior_sumatorio = limite_inferior_sumatorio
-        # self.individuos = []
         self.individuos = np.array([])
 
         for i in range(self.numero_individuos):
@@ -55,8 +54,8 @@ class Poblacion:
         self.individuos = sorted(self.individuos,key=lambda k: k.fitness)
 
 
-        self.probabilidades_progenitores = []
-        self.calculo_progenitor_probabilidad()
+        # self.probabilidades_progenitores = []
+        # self.calculo_progenitor_probabilidad()
 
         if(numero_elites >0):
             self.elite = []
@@ -77,8 +76,8 @@ class Poblacion:
         probabilidades = np.array(probabilidades,dtype=int)
         self.probabilidades_progenitores = probabilidades.copy()
 
-    def cruze_2_puntos_con_mutacion(self,clearing=False):
-        self.calculo_progenitor_probabilidad()
+    def cruce_2_puntos_con_mutacion(self,clearing=False):
+        # self.calculo_progenitor_probabilidad()
         nueva_poblacion = []
         # Generamos el numero de hijos necesarios en base al numero de individuos de la población.
         hijos = list()
@@ -96,7 +95,7 @@ class Poblacion:
             punto_corte_b = 0
             distanciamiento = abs(punto_corte_b - punto_corte_a)
             # punto_corte_a == punto_corte_b or distanciamiento > 6:
-            while distanciamiento > 6:
+            while distanciamiento > 6 or punto_corte_a == punto_corte_b:
                 punto_corte_a = random.choice(np.arange(0,15))
                 punto_corte_b = random.choice(np.arange(0,15))
                 distanciamiento = abs(punto_corte_b - punto_corte_a)
@@ -104,10 +103,7 @@ class Poblacion:
             if punto_corte_b < punto_corte_a:
                 punto_corte_a, punto_corte_b = punto_corte_b,punto_corte_a
 
-            # ¿ Hay que dividir el segmento para el intercambio o se intercambia el segmento completo ?
-            # numero_elementos_contenidos = abs(punto_corte_b - punto_corte_a) + 1
-            # if numero_elementos_contenidos % 2 == 0:
-
+          
             
             # hijo formado por padre y segmento de madre
             hijo_1 = copy.deepcopy(padre)
@@ -123,8 +119,9 @@ class Poblacion:
             else:
                 if(random.uniform(0,1) < 0.8):
                     hijo_2.contenido[punto_corte_a:punto_corte_b] = padre.contenido[punto_corte_a:punto_corte_b].copy()
-                    
-                    
+       
+            
+            
             if(hijo_1.contenido.sum() > 205):
                 hijo_valido = hijo_1.mutar_v2()
                 if(hijo_valido):
@@ -136,8 +133,7 @@ class Poblacion:
                 if(hijo_valido):
                     hijos.insert(numero_hijos_validos,hijo_2)
                     numero_hijos_validos += 1
-
-
+    
         # Agregamos la elite a la nueva población.
         nueva_poblacion = copy.deepcopy(self.elite)
         nueva_poblacion = np.concatenate((nueva_poblacion,hijos[0:(self.numero_individuos-len(self.elite))]))
@@ -154,13 +150,11 @@ class Poblacion:
             self.individuos[i].fitness = algoritmosV2.coste_slot(self.individuos[i].contenido) + self.individuos[i].alpha*slots_diff
             self.individuos[i].km = self.individuos[i].fitness - self.individuos[i].alpha*slots_diff
 
+       
 
     
 
-    def clearing(self,kappa = 2,radio = 4,numero_elites= 5,verbose=False):
-        # modificar genetioc basico se incluye dentro del mismo este metodo
-        # se aplica el multi modal indicando por parametro al GB
-        
+    def clearing(self,kappa = 2,radio = 4,numero_elites= 5,verbose=False):       
         nichos = []
         nichos_return = []
         pos_nicho = 0
@@ -188,7 +182,7 @@ class Poblacion:
                     print("distancia entre ind",distancia)
                 if(distancia <= radio):
                     if(verbose):
-                        print("Radios menor o igual")
+                        print("Radios menor o igual,comprobamos")
                     if(elementos_insertados < kappa):
                         if(verbose):
                             print("Agrego a nicho")
@@ -196,13 +190,12 @@ class Poblacion:
                         elementos_insertados += 1
                     else:
                         if(verbose):
-                            print("Borro", end="")
+                            print("Borro individuo kappa completo", end="")
                         indices_borrar_poblacion.append(indice)
             
             for i in range(len(indices_agregar_en_nicho)):
                 nicho_tmp.append(copy.deepcopy(poblacion_tmp[indices_agregar_en_nicho[i]]))
                 self.individuos.append(copy.deepcopy(poblacion_tmp[indices_agregar_en_nicho[i]]))
-            
             
             indices_borrar_poblacion.extend(indices_agregar_en_nicho)
             
@@ -213,16 +206,6 @@ class Poblacion:
             pos_nicho += 1
             nicho_tmp.clear()         
                         
-                        
-                        
-
-        # print("poblacion")
-        # print(poblacion_tmp)
         self.individuos.clear()
-        
-        
         self.individuos = copy.deepcopy(nichos)
-        
-        # print(self.individuos)
-        
         return nichos_return
