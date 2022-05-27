@@ -301,17 +301,37 @@ def busqueda_local(solucion_inicial):
     # print(slot_por_estaciones , "coste mejor ",coste_mejor , " " , "--- %s seconds ---" % (time.time() - start_time))
     # print(numero_evaluaciones,",")
     
-    return slot_por_estaciones,coste_mejor
+    return slot_por_estaciones,coste_mejor,numero_evaluaciones
 
 
-def generar_indice_ponderado_posicion(dimension,numero_indices_resultantes = 2):
+def generar_indice_ponderado_fitness(self,dimension,numero_indices_resultantes = 2):
     """
-    Genera un indice sobre una lista dando mayor probabilidad al inicio de la lista reduciendo según se desciende
+    Genera indices sobre una lista dando mayor probabilidad de seleccion a los individuos de mejor fitness
     """
-    lista_indices = list(np.arange(dimension))
-    lista_indices.reverse()
-    lista_pesos = list(np.linspace(1,dimension*10,dimension))
-    indices_random_probabilidad = random.choices(lista_indices,weights=lista_pesos,k = numero_indices_resultantes)
+    # ruleta proporcional
+    
+    indices_random_probabilidad = list()
+    fitness = list()
+    for i in range(len(self.individuos)):
+        fitness.append(self.individuos[i].fitness)
+
+    total_fitness = np.array(fitness).sum()
+
+    fitness_individuales = list()
+    for i in range(len(self.individuos)):
+        fitness_individuales.append(1/(self.individuos[i].fitness / total_fitness))
+
+    probabilidad_eleccion_norm = fitness_individuales / np.linalg.norm(fitness_individuales)
+
+    valor_aleatorio = random.uniform(0,1)
+    acumulado = 0.0
+    for i in range(0,numero_indices_resultantes):
+        for k in range(len(probabilidad_eleccion_norm)):
+            acumulado += probabilidad_eleccion_norm[k]
+            k+=1
+            if(acumulado > valor_aleatorio):
+                break
+        indices_random_probabilidad.append(k)
 
     return indices_random_probabilidad
     

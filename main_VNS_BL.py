@@ -84,9 +84,6 @@ def mutar(s,k,paso_mutacion):
         
    
 
-    
-    
-
 def VNS(alpha = 5):
     start_time = time.time()
     S = algoritmosV2.greedy_inicializar(16,233)
@@ -95,9 +92,14 @@ def VNS(alpha = 5):
     bl = 0
     S_vecino = S.copy()
     coste_actual = algoritmosV2.coste_slot(S)
-    while bl < 60:
-        s_tmp,coste_tmp = algoritmosV2.busqueda_local(S_vecino)
+    
+    llamadas_total = 0
+    
+    while bl < 4:
+        s_tmp,coste_tmp,llamadas = algoritmosV2.busqueda_local(S_vecino)
+        llamadas_total += llamadas
         bl += 1
+        # print(bl)
                            
      
         if coste_tmp < coste_actual:
@@ -116,17 +118,18 @@ def VNS(alpha = 5):
         coste_mod = coste_actual
       
     print("Solucion BL " , S , " con coste -> ", coste_mod, "   " ,np.array(S).sum() , "--- %s seconds ---" % (time.time() - start_time))
+    print(llamadas_total , " llamadas total coste")
 
 
-# random.seed(258741369)
-# np.random.seed(258741369)
+random.seed(258741369)
+np.random.seed(258741369)
 
-random.seed(132456987)
-np.random.seed(132456987)
+# random.seed(132456987)
+# np.random.seed(132456987)
 
 
-# VNS()
-# busqueda_local_mod()
+VNS(alpha=5)
+# busqueda_local_mod(alpha=5)
 
 
 

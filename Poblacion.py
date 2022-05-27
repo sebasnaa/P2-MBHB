@@ -81,44 +81,77 @@ class Poblacion:
         nueva_poblacion = []
         # Generamos el numero de hijos necesarios en base al numero de individuos de la población.
         hijos = list()
-
         numero_hijos_validos = 0
+        contador = 0
 
         while(numero_hijos_validos < self.numero_individuos-len(self.elite)):
             
-            indices_progenitores = algoritmosV2.generar_indice_ponderado_posicion(len(self.individuos))
+            indices_progenitores = algoritmosV2.generar_indice_ponderado_fitness(self,len(self.individuos))
+            
+        
             
             padre = self.individuos[indices_progenitores[0]]
             madre = self.individuos[indices_progenitores[1]]
 
+            # punto_corte_a = 0
+            # punto_corte_b = 0
+            # distanciamiento = abs(punto_corte_b - punto_corte_a)
+            # # punto_corte_a == punto_corte_b or distanciamiento > 6:
+            # while distanciamiento > 6 or punto_corte_a == punto_corte_b:
+            #     punto_corte_a = random.choice(np.arange(0,15))
+            #     punto_corte_b = random.choice(np.arange(0,15))
+            #     distanciamiento = abs(punto_corte_b - punto_corte_a)
+
+            # if punto_corte_b < punto_corte_a:
+            #     punto_corte_a, punto_corte_b = punto_corte_b,punto_corte_a
+
+
+            # # hijo formado por padre y segmento de madre
+            # hijo_1 = copy.deepcopy(padre)
+            # if(not clearing):
+            #     hijo_1.contenido[punto_corte_a:punto_corte_b] = madre.contenido[punto_corte_a:punto_corte_b].copy()
+            # else:
+            #     if(random.uniform(0,1) < 0.8):
+            #         hijo_1.contenido[punto_corte_a:punto_corte_b] = madre.contenido[punto_corte_a:punto_corte_b].copy()
+            # # # hijo formado por madre y segmento de padre
+            # hijo_2 = copy.deepcopy(madre)
+            # if(not clearing):
+            #     hijo_2.contenido[punto_corte_a:punto_corte_b] = padre.contenido[punto_corte_a:punto_corte_b].copy()
+            # else:
+            #     if(random.uniform(0,1) < 0.8):
+            #         hijo_2.contenido[punto_corte_a:punto_corte_b] = padre.contenido[punto_corte_a:punto_corte_b].copy()
+
             punto_corte_a = 0
             punto_corte_b = 0
-            distanciamiento = abs(punto_corte_b - punto_corte_a)
-            # punto_corte_a == punto_corte_b or distanciamiento > 6:
-            while distanciamiento > 6 or punto_corte_a == punto_corte_b:
+            indices = list()
+
+            while punto_corte_a == punto_corte_b:
+                valor = random.choice(np.arange(3,7))
                 punto_corte_a = random.choice(np.arange(0,15))
-                punto_corte_b = random.choice(np.arange(0,15))
-                distanciamiento = abs(punto_corte_b - punto_corte_a)
-
-            if punto_corte_b < punto_corte_a:
-                punto_corte_a, punto_corte_b = punto_corte_b,punto_corte_a
-
+                punto_corte_b = (punto_corte_a + valor) % 16
+                    
+            for indice in range(valor):
+                indices.append((punto_corte_a + indice) % 16)
           
             
             # hijo formado por padre y segmento de madre
             hijo_1 = copy.deepcopy(padre)
             if(not clearing):
-                hijo_1.contenido[punto_corte_a:punto_corte_b] = madre.contenido[punto_corte_a:punto_corte_b].copy()
+                for i in range(len(indices)):
+                    hijo_1.contenido[indices[i]] = madre.contenido[indices[i]].copy()
             else:
                 if(random.uniform(0,1) < 0.8):
-                    hijo_1.contenido[punto_corte_a:punto_corte_b] = madre.contenido[punto_corte_a:punto_corte_b].copy()
+                    for i in range(len(indices)):
+                        hijo_1.contenido[indices[i]] = madre.contenido[indices[i]].copy()
             # # hijo formado por madre y segmento de padre
             hijo_2 = copy.deepcopy(madre)
             if(not clearing):
-                hijo_2.contenido[punto_corte_a:punto_corte_b] = padre.contenido[punto_corte_a:punto_corte_b].copy()
+                for i in range(len(indices)):
+                    hijo_2.contenido[indices[i]] = padre.contenido[indices[i]].copy()
             else:
                 if(random.uniform(0,1) < 0.8):
-                    hijo_2.contenido[punto_corte_a:punto_corte_b] = padre.contenido[punto_corte_a:punto_corte_b].copy()
+                    for i in range(len(indices)):
+                        hijo_2.contenido[indices[i]] = padre.contenido[indices[i]].copy()
        
             
             
